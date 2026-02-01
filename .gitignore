@@ -1,0 +1,8 @@
+.vscode
+.env
+__pycache__
+node_modules
+configurations
+confsPng
+outFile.dat
+CalcsCpp.cpp
