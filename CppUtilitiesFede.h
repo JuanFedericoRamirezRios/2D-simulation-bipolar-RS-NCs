@@ -72,6 +72,19 @@ public:
         oString << std::setprecision(precision) << (num);
         return oString.str();
     };
+    static string CppVersion() {
+        long standard = __cplusplus;
+        string version;
+        if (standard == 199711L) version = "C++98/C++03";
+        else if (standard == 201103L) version = "C++11";
+        else if (standard == 201402L) version = "C++14";
+        else if (standard == 201703L) version = "C++17";
+        else if (standard == 202002L) version = "C++20";
+        else if (standard == 202302L) version = "C++23";
+        else if (standard > 202302L) version = "C++26 (or more actually)";
+        else version = "Previous to C++98 or custom: " + to_string(standard) + " standard";
+        return version;
+    };
 };
 class RANDOM_FEDE {
 private:

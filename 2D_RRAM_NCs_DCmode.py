@@ -294,6 +294,7 @@ class MAIN_FRAME(tk.Tk):
     def DrawData(s): # Graphs of I-V and Ns-V
         ppt.figure("I Vs V").clear()
         ppt.figure("Ns Vs V").clear()
+        ppt.close("Vo configs")
 
         ppt.figure("I Vs V")
         ppt.grid(True)
@@ -436,39 +437,83 @@ class MAIN_FRAME(tk.Tk):
                     row = row + 1
         return np.array(map)
 
-    def PaintStructuresIV(s, outPath, map):
-        ppt.figure("Vo configs").clear()
-        ppt.figure("Vo configs")
-
+    def PlotVoConfig(s, subPlot, map, dfSim, nData):
         cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom', ['white', (0,1,0), 'blue'])
 
-        ppt.imshow(map, cmap=cmap, interpolation='nearest')
-        ppt.xlabel("columns")
-        ppt.ylabel("rows")
-        # ppt.figure(figsize=(8,6))
-        ppt.title(os.path.basename(outPath)[9:-4])
+        subPlot.imshow(map, cmap=cmap, interpolation='nearest')
+        subPlot.set_xlabel("columns"); subPlot.set_ylabel("rows")
+        # subPlot.figure(figsize=(8,6))
+        subPlot.set_title("Sim: " 
+                  + str(dfSim.loc[nData, 'V (V)']) + "V, " 
+                  + "Ns=" + "{:.2E}".format(dfSim.loc[nData, "Ns (a.u.)"]) + ", "
+                  + "{:.2E}".format(dfSim.loc[nData, 'I (A)']) + "A"
+                  )
+
+    def PlotIV(s, subPlot, dfSim, nData):
+        subPlot.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-")
+        subPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'I (A)']])
+        subPlot.set_xlabel("V (V)"); subPlot.set_ylabel("I (A)")
+
+    def PlotNsV(s, subPlot, dfSim, nData):
+        subPlot.plot(dfSim["V (V)"], dfSim["Ns (a.u.)"], "-")
+        subPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'Ns (a.u.)']])
+        subPlot.set_xlabel("V (V)"); subPlot.set_ylabel("Ns (a.u.)")
+    
+    def PaintVoConfigINsV(s, outPath, map, dfSim, nData):
+        ppt.figure("Vo configs").clear()
+        ppt.figure("Vo configs")
+        ppt.figure("Vo configs").set_size_inches((12.8, 4))
+
+
+        VoConfig = ppt.subplot2grid((1,3), (0,0))
+        s.PlotVoConfig(VoConfig, map, dfSim, nData)
+
+        IV = ppt.subplot2grid((1,3), (0,1))
+        s.PlotIV(IV, dfSim, nData)
+
+        NsV = ppt.subplot2grid((1,3), (0,2))
+        s.PlotNsV(NsV, dfSim, nData)
+
+
+
+        ppt.tight_layout() # Prevents overlapping of titles and labels.
         ppt.savefig(outPath)
 
-        ppt.pause(0.1)
+        
+        # ppt.pause(0.1)
     
     def DrawLastSimulation(s):
         s.simulateButton.config(state = "disabled")
         s.drawButton.config(state = "disabled")
-        print("Drawing Vo configurations...")
+        
+        inList = glob.glob('./configurations/*.txt')
+
+        lineHead, _ = pu.FindText(s.textOutput.get(), "V (V)\t")
+        if lineHead == None:
+            print("Error: Not find Headers line in the outputFile")
+            return
+        dfSim = pd.read_csv(s.textOutput.get(), sep = "\t", usecols= ["V (V)", "Ns (a.u.)", "I (A)"], skiprows=lineHead)
+
+        if len(inList) != dfSim.shape[0]:
+            print("Error: number files != number data")
+            return
+        print(f"Drawing {len(inList)} VoConfigurations", end='')
 
         os.system("rmdir /s /q \"confsPng\"")
         os.system("md \"confsPng\"")
         
-        inList = glob.glob('./configurations/*.txt')
+        # s.PaintVoConfigINsV("./confsPng/00000000 example.png", s.ReadStructure(inList[100]), dfSim, 100)
 
-        
-        # s.PaintStructuresIV("./confsPng/00000000 example.png", s.ReadStructure(inList[0]))
-
-        for inPath in inList:
+        for n, inPath in enumerate(inList):
             fileName = os.path.basename(inPath)[:-4]
             outPath = './confsPng/' + fileName + ".png"
-            s.PaintStructuresIV(outPath, s.ReadStructure(inPath))
+            s.PaintVoConfigINsV(outPath, s.ReadStructure(inPath), dfSim, n)
+            print('.', end='',flush=True) # flush=True: ensure that string is immediately printed.
 
+        print()
+        print(f"Drawing {len(inList)} VoConfigurations ended")
+
+        
         s.simulateButton.config(state = "active")
         s.drawButton.config(state = "active")
         print()
