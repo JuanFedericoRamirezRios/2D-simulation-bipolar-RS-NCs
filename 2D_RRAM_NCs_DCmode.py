@@ -17,6 +17,7 @@ import matplotlib.pyplot as ppt
 import PythonUtilitiesFede as pu
 import matplotlib.colors
 import numpy as np
+import sys
 
 # import pylab as ppt # It is used for interactive apps
 # from matplotlib.figure import Figure
@@ -449,36 +450,26 @@ class MAIN_FRAME(tk.Tk):
                   + "{:.2E}".format(dfSim.loc[nData, 'I (A)']) + "A"
                   )
 
-    def PlotIV(s, subPlot, dfSim, nData):
-        subPlot.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-")
-        subPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'I (A)']])
-        subPlot.set_xlabel("V (V)"); subPlot.set_ylabel("I (A)")
+    def PlotIV(s, subPlot, dfSim):
+        return
 
-    def PlotNsV(s, subPlot, dfSim, nData):
-        subPlot.plot(dfSim["V (V)"], dfSim["Ns (a.u.)"], "-")
-        subPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'Ns (a.u.)']])
-        subPlot.set_xlabel("V (V)"); subPlot.set_ylabel("Ns (a.u.)")
+    def PlotNsV(s, subPlot, dfSim):
+        return
     
-    def PaintVoConfigINsV(s, outPath, map, dfSim, nData):
-        ppt.figure("Vo configs").clear()
-        ppt.figure("Vo configs")
-        ppt.figure("Vo configs").set_size_inches((12.8, 4))
+    def PaintVoConfigINsV(s, outPath, map, dfSim, VoConfig, IVsubPlot, NsVsubPlot, nData):
 
-
-        VoConfig = ppt.subplot2grid((1,3), (0,0))
+        VoConfig.clear()
         s.PlotVoConfig(VoConfig, map, dfSim, nData)
 
-        IV = ppt.subplot2grid((1,3), (0,1))
-        s.PlotIV(IV, dfSim, nData)
+        if s.firstDraw == False: 
+            s.scaNsV.remove()
+            s.scaIV.remove()
 
-        NsV = ppt.subplot2grid((1,3), (0,2))
-        s.PlotNsV(NsV, dfSim, nData)
-
-
+        s.scaIV = IVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'I (A)']], s=100, c="red")
+        s.scaNsV = NsVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'Ns (a.u.)']], s=100, c="red")
 
         ppt.tight_layout() # Prevents overlapping of titles and labels.
         ppt.savefig(outPath)
-
         
         # ppt.pause(0.1)
     
@@ -497,22 +488,37 @@ class MAIN_FRAME(tk.Tk):
         if len(inList) != dfSim.shape[0]:
             print("Error: number files != number data")
             return
-        print(f"Drawing {len(inList)} VoConfigurations", end='')
+        print(f"Drawing {len(inList)} VoConfigurations:", end=' ')
 
         os.system("rmdir /s /q \"confsPng\"")
         os.system("md \"confsPng\"")
-        
-        # s.PaintVoConfigINsV("./confsPng/00000000 example.png", s.ReadStructure(inList[100]), dfSim, 100)
 
+        ppt.figure("Vo configs").clear()
+        ppt.figure("Vo configs")
+        ppt.figure("Vo configs").set_size_inches((12.8, 4))
+
+        VoConfig = ppt.subplot2grid((1,3), (0,0))
+
+        IVsubPlot = ppt.subplot2grid((1,3), (0,1))
+        IVsubPlot.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-")
+        IVsubPlot.set_xlabel("V (V)"); IVsubPlot.set_ylabel("I (A)")
+        
+        NsVsubPlot = ppt.subplot2grid((1,3), (0,2))
+        NsVsubPlot.plot(dfSim["V (V)"], dfSim["Ns (a.u.)"], "-")
+        NsVsubPlot.set_xlabel("V (V)"); NsVsubPlot.set_ylabel("Ns (a.u.)")
+
+        # s.firstDraw = True; s.PaintVoConfigINsV("./confsPng/00000000 example.png", s.ReadStructure(inList[100]), dfSim,VoConfig, IVsubPlot, NsVsubPlot, 100)
+
+        s.firstDraw = True
+        c = 0
         for n, inPath in enumerate(inList):
             fileName = os.path.basename(inPath)[:-4]
             outPath = './confsPng/' + fileName + ".png"
-            s.PaintVoConfigINsV(outPath, s.ReadStructure(inPath), dfSim, n)
-            print('.', end='',flush=True) # flush=True: ensure that string is immediately printed.
+            s.PaintVoConfigINsV(outPath, s.ReadStructure(inPath), dfSim, VoConfig, IVsubPlot, NsVsubPlot, n)
+            s.firstDraw = False
+            c = pu.PrintValStatic(c, f"{n+1}")
 
         print()
-        print(f"Drawing {len(inList)} VoConfigurations ended")
-
         
         s.simulateButton.config(state = "active")
         s.drawButton.config(state = "active")
