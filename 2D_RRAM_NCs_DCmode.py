@@ -461,9 +461,8 @@ class MAIN_FRAME(tk.Tk):
         VoConfig.clear()
         s.PlotVoConfig(VoConfig, map, dfSim, nData)
 
-        if s.firstDraw == False: 
-            s.scaNsV.remove()
-            s.scaIV.remove()
+        s.scaIV.remove()
+        s.scaNsV.remove()
 
         s.scaIV = IVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'I (A)']], s=100, c="red")
         s.scaNsV = NsVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'Ns (a.u.)']], s=100, c="red")
@@ -476,6 +475,10 @@ class MAIN_FRAME(tk.Tk):
     def DrawLastSimulation(s):
         s.simulateButton.config(state = "disabled")
         s.drawButton.config(state = "disabled")
+
+        ppt.figure("Vo configs").clear()
+        ppt.figure("Vo configs")
+        ppt.figure("Vo configs").set_size_inches((12.8, 4))
         
         inList = glob.glob('./configurations/*.txt')
 
@@ -493,29 +496,25 @@ class MAIN_FRAME(tk.Tk):
         os.system("rmdir /s /q \"confsPng\"")
         os.system("md \"confsPng\"")
 
-        ppt.figure("Vo configs").clear()
-        ppt.figure("Vo configs")
-        ppt.figure("Vo configs").set_size_inches((12.8, 4))
-
         VoConfig = ppt.subplot2grid((1,3), (0,0))
 
         IVsubPlot = ppt.subplot2grid((1,3), (0,1))
         IVsubPlot.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-")
         IVsubPlot.set_xlabel("V (V)"); IVsubPlot.set_ylabel("I (A)")
+        s.scaIV = IVsubPlot.scatter([0], [0], s=100, c="red") # Create a point to avoid errors in PaintVoConfigINsV() when s.scaIV.remove()
         
         NsVsubPlot = ppt.subplot2grid((1,3), (0,2))
         NsVsubPlot.plot(dfSim["V (V)"], dfSim["Ns (a.u.)"], "-")
         NsVsubPlot.set_xlabel("V (V)"); NsVsubPlot.set_ylabel("Ns (a.u.)")
+        s.scaNsV = NsVsubPlot.scatter([0], [0], s=100, c="red") # Create a point to avoid errors in PaintVoConfigINsV() when s.scaNsV.remove()
 
-        # s.firstDraw = True; s.PaintVoConfigINsV("./confsPng/00000000 example.png", s.ReadStructure(inList[100]), dfSim,VoConfig, IVsubPlot, NsVsubPlot, 100)
+        # s.PaintVoConfigINsV("./confsPng/00000000 example.png", s.ReadStructure(inList[100]), dfSim,VoConfig, IVsubPlot, NsVsubPlot, 100)
 
-        s.firstDraw = True
         c = 0
         for n, inPath in enumerate(inList):
             fileName = os.path.basename(inPath)[:-4]
             outPath = './confsPng/' + fileName + ".png"
             s.PaintVoConfigINsV(outPath, s.ReadStructure(inPath), dfSim, VoConfig, IVsubPlot, NsVsubPlot, n)
-            s.firstDraw = False
             c = pu.PrintValStatic(c, f"{n+1}")
 
         print()
