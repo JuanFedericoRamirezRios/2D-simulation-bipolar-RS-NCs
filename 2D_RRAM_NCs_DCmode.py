@@ -17,12 +17,6 @@ import matplotlib.pyplot as ppt
 import PythonUtilitiesFede as pu
 import matplotlib.colors
 import numpy as np
-import sys
-
-# import pylab as ppt # It is used for interactive apps
-# from matplotlib.figure import Figure
-# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-# import time
 
 import ctypes
 
@@ -39,28 +33,9 @@ class MAIN_FRAME(tk.Tk):
 
         print("")
 
-        # winNsV = tk.Toplevel(s) # Subwindow
-        # winNsV.geometry(f"{400}x{400}")
-        # figNsV = Figure()
-        # plotFigNsV = figNsV.add_subplot(111) # 1 row, 1 col and 1st plot.
-        # plotFigNsV.set_title("Ns Vs V")
-        # graphNsV = FigureCanvasTkAgg(figNsV, master=winNsV)
-        # graphNsV.get_tk_widget().pack(fill="both", expand=True)
-        # x = numpy.arange(0, 10, 1)
-        # plotFigNsV.plot(x, x**2, label='Funcion 1')
-
-
-        # winIV = tk.Toplevel(s) # Subwindow
-        # winIV.geometry(f'{400}x{400}')
-        # figIV = Figure()
-        # plotFigIV = figIV.add_subplot(111)
-        # plotFigIV.set_title("I Vs V")
-        # graphIV = FigureCanvasTkAgg(figIV, master=winIV)
-        # graphIV.get_tk_widget().pack(fill="both", expand=True)
-        # plotFigIV.plot(x, 2*x, label='Funcion 2')
-
-        # s.openApp = True
-        # s.DrawData()
+        experimentInit = "K-63-RT_exp_corrct.dat"
+        structureInit = "K-63-RT-shift.txt"
+        outInit = "outFile.dat"
 
         s.N_LRS = [0.2]    # u.a. # self: N_LRS is a list of the class MAIN_FRAME
         # self.N_HRS = [-0.7]   # u.a.
@@ -91,7 +66,7 @@ class MAIN_FRAME(tk.Tk):
         s.A = [10.0E-3]            # cm2
 
         # self.numVoIni = [0.0v
-        s.numVoIni = [0]
+        s.numVoIni = [380]
         s.stepTime0 = [5.0E-6] # sec
         # self.Eoe = [1.1]          # eV
         s.Eoe = [1.0]          # eV
@@ -111,6 +86,8 @@ class MAIN_FRAME(tk.Tk):
         # self.Easclc = [0.5] # eV . Ea = phit.
 
         s.seed = [1]
+
+        s.minIview = 1e-18 # Amp
 
         #################################### GUI ##########################################
         # hframe1 = tk.Frame(s)
@@ -233,7 +210,7 @@ class MAIN_FRAME(tk.Tk):
         expLabel = tk.Label(master = hFrame5, text = "Experiment:")
         expLabel.pack(side = "left", fill = "x", expand = True)
         s.textExp = tk.StringVar()
-        s.textExp.set("K-63-RT_exp_corrct.dat")
+        s.textExp.set(experimentInit)
         expTextEntry = tk.Entry(master = hFrame5, textvariable = s.textExp) # textExp pass as reference
         expTextEntry.pack(side = "left", fill = "x", expand = True)
 
@@ -242,7 +219,7 @@ class MAIN_FRAME(tk.Tk):
         structureLabel = tk.Label(master = hFrame6, text = "Structure:")
         structureLabel.pack(side = "left", fill = "x", expand = True)
         s.textStructure = tk.StringVar()
-        s.textStructure.set("K-63-RT-shift-VoInter.txt")
+        s.textStructure.set(structureInit)
         structureTextEntry = tk.Entry(master = hFrame6, textvariable = s.textStructure)
         structureTextEntry.pack(side = "left", fill = "x", expand = True)
 
@@ -251,7 +228,7 @@ class MAIN_FRAME(tk.Tk):
         outputLabel = tk.Label(master = hFrame7, text = "Out file:")
         outputLabel.pack(side = "left", fill = "x", expand = True)
         s.textOutput = tk.StringVar()
-        s.textOutput.set("outFile.dat")
+        s.textOutput.set(outInit)
         outputTextEntry = tk.Entry(master = hFrame7, textvariable = s.textOutput)
         outputTextEntry.pack(side = "left", fill = "x", expand = True)
 
@@ -301,6 +278,7 @@ class MAIN_FRAME(tk.Tk):
         ppt.grid(True)
         ppt.xlabel("Voltage (V)")
         ppt.ylabel("Current (A)")
+        ppt.ylim(bottom=s.minIview)
         print("Drawing the experimental data")
 
         dfExp = pd.read_csv(s.textExp.get(), sep = "\t", usecols= ["V (V)", "I (A)"])
@@ -457,14 +435,17 @@ class MAIN_FRAME(tk.Tk):
         return
     
     def PaintVoConfigINsV(s, outPath, map, dfSim, VoConfig, IVsubPlot, NsVsubPlot, nData):
-
         VoConfig.clear()
         s.PlotVoConfig(VoConfig, map, dfSim, nData)
 
         s.scaIV.remove()
         s.scaNsV.remove()
 
-        s.scaIV = IVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'I (A)']], s=100, c="red")
+        
+        I = dfSim.loc[nData, 'I (A)']
+        if I < s.minIview: I = s.minIview
+
+        s.scaIV = IVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [I], s=100, c="red")
         s.scaNsV = NsVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'Ns (a.u.)']], s=100, c="red")
 
         ppt.tight_layout() # Prevents overlapping of titles and labels.
@@ -501,6 +482,7 @@ class MAIN_FRAME(tk.Tk):
         IVsubPlot = ppt.subplot2grid((1,3), (0,1))
         IVsubPlot.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-")
         IVsubPlot.set_xlabel("V (V)"); IVsubPlot.set_ylabel("I (A)")
+        IVsubPlot.set_ylim(bottom=s.minIview)
         s.scaIV = IVsubPlot.scatter([0], [0], s=100, c="red") # Create a point to avoid errors in PaintVoConfigINsV() when s.scaIV.remove()
         
         NsVsubPlot = ppt.subplot2grid((1,3), (0,2))
