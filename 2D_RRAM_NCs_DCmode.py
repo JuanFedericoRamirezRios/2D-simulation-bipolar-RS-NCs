@@ -33,9 +33,14 @@ class MAIN_FRAME(tk.Tk):
 
         print("")
 
-        experimentInit = "K-63-RT_exp_corrct.dat"
-        structureInit = "K-63-RT-shift.txt"
-        outInit = "outFile.dat"
+        s.minIview = 1e-18 # Amp
+
+        valuesInitPath = "initValues.txt"
+
+        s.textExp = tk.StringVar(); s.textExp.set("K-63-RT_exp_corrct.dat")
+        s.textStructure = tk.StringVar(); s.textStructure.set("K-63-RT-shift.txt")
+        s.textOutput = tk.StringVar(); s.textOutput.set("outFile.dat")
+        s.seed = [1]
 
         s.N_LRS = [0.2]    # u.a. # self: N_LRS is a list of the class MAIN_FRAME
         # self.N_HRS = [-0.7]   # u.a.
@@ -85,9 +90,9 @@ class MAIN_FRAME(tk.Tk):
         s.phit = [0.1] # V
         # self.Easclc = [0.5] # eV . Ea = phit.
 
-        s.seed = [1]
+        
 
-        s.minIview = 1e-18 # Amp
+        s.ReadInitValues(valuesInitPath, 33)
 
         #################################### GUI ##########################################
         # hframe1 = tk.Frame(s)
@@ -97,8 +102,6 @@ class MAIN_FRAME(tk.Tk):
             s.columnconfigure(n, weight = 1)
         for n in range(4):
             s.rowconfigure(n, weight = 1)
-
-        
 
         N_LRSControls = NC.CONTROLS_VALUE(master = s, name = "N_LRS", units = "au", value = s.N_LRS)
         N_LRSControls.grid(column = 0, row = 0, sticky = "nsew") # nsew: north, south, east y west.
@@ -209,8 +212,6 @@ class MAIN_FRAME(tk.Tk):
         hFrame5.pack(anchor = "n", expand = True)
         expLabel = tk.Label(master = hFrame5, text = "Experiment:")
         expLabel.pack(side = "left", fill = "x", expand = True)
-        s.textExp = tk.StringVar()
-        s.textExp.set(experimentInit)
         expTextEntry = tk.Entry(master = hFrame5, textvariable = s.textExp) # textExp pass as reference
         expTextEntry.pack(side = "left", fill = "x", expand = True)
 
@@ -218,8 +219,6 @@ class MAIN_FRAME(tk.Tk):
         hFrame6.pack(anchor = "c", expand = True)
         structureLabel = tk.Label(master = hFrame6, text = "Structure:")
         structureLabel.pack(side = "left", fill = "x", expand = True)
-        s.textStructure = tk.StringVar()
-        s.textStructure.set(structureInit)
         structureTextEntry = tk.Entry(master = hFrame6, textvariable = s.textStructure)
         structureTextEntry.pack(side = "left", fill = "x", expand = True)
 
@@ -227,8 +226,6 @@ class MAIN_FRAME(tk.Tk):
         hFrame7.pack(anchor = "s", expand = True)
         outputLabel = tk.Label(master = hFrame7, text = "Out file:")
         outputLabel.pack(side = "left", fill = "x", expand = True)
-        s.textOutput = tk.StringVar()
-        s.textOutput.set(outInit)
         outputTextEntry = tk.Entry(master = hFrame7, textvariable = s.textOutput)
         outputTextEntry.pack(side = "left", fill = "x", expand = True)
 
@@ -253,10 +250,66 @@ class MAIN_FRAME(tk.Tk):
 
         #################################### End GUI ##########################################
 
-        # s.Init()
-        # graphNsV.draw()
-        # graphIV.draw()
+    def PassInitValues(s, p):
+        
+        # s.textExp.set(p[0])
+        # s.textStructure.set(p[1])
+        # s.textOutput.set(p[2])
 
+        try:
+            s.textExp.set(p[0])
+            s.textStructure.set(p[1])
+            s.textOutput.set(p[2])
+            s.seed[0] = int(p[3])
+            if s.seed[0] < 1: 
+                print("Warning: seed must be > 0, now seed = 1")
+                s.seed[0] = 1
+
+            s.N_LRS[0] = float(p[4])
+            s.N_HRS[0] = float(p[5])
+            s.Nfresh[0] = float(p[6])
+            s.Vforming[0] = float(p[7])
+            s.Vreset[0] = float(p[8])
+            s.Vset[0] = float(p[9])
+            s.Khrs[0] = float(p[10])
+            s.Klrs[0] = float(p[11])
+
+            s.gammaSET[0] = float(p[12])
+            s.gammaRESET[0] = float(p[13])
+            s.phiDrift[0] = float(p[14])
+            s.complIforming[0] = float(p[15])
+            s.complIreset[0] = float(p[16])
+            s.complIset[0] = float(p[17])
+            s.a[0] = float(p[18])
+            s.A[0] = float(p[19])
+
+            s.numVoIni[0] = int(p[20])
+            s.stepTime0[0] = float(p[21])
+            s.Eoe[0] = float(p[22])
+            s.Eom[0] = float(p[23])
+            s.Lo[0] = float(p[24])
+            s.beta0[0] = float(p[25])
+            s.Rth[0] = float(p[26])
+            s.Ao[0] = float(p[27])
+
+            s.cycles[0] = int(p[28])
+            s.Nc[0] = float(p[29])
+            s.u[0] = float(p[30])
+            s.epsilon[0] = float(p[31])
+            s.phit[0] = float(p[32])       
+            
+        except ValueError as e:
+            print("Error:", e)
+
+    def ReadInitValues(s, filePath, numParams) -> None:
+        params = pu.LoadParams(filePath)
+        if params == None:
+            return
+        if len(params) != numParams:
+            print(f"Warning: The number of params in {filePath} is not {numParams}")
+            return
+        s.PassInitValues(params)
+    
     def ChangeSeed(s, *args):
         try:
             newValue = int(s.textSeed.get())
@@ -286,7 +339,7 @@ class MAIN_FRAME(tk.Tk):
         ppt.semilogy(dfExp["V (V)"], dfExp["I (A)"], "-") # "-": points joined by lines.
         print("Drawing the calculated data")
 
-        lineHead, _ = pu.FindText(s.textOutput.get(), "V (V)\t")
+        lineHead, _, __ = pu.FindInPlainText(s.textOutput.get(), "V (V)\t")
         if lineHead == None:
             print("Error: Not find Headers line in the outputFile")
             return
@@ -463,7 +516,7 @@ class MAIN_FRAME(tk.Tk):
         
         inList = glob.glob('./configurations/*.txt')
 
-        lineHead, _ = pu.FindText(s.textOutput.get(), "V (V)\t")
+        lineHead, _, __ = pu.FindInPlainText(s.textOutput.get(), "V (V)\t")
         if lineHead == None:
             print("Error: Not find Headers line in the outputFile")
             return

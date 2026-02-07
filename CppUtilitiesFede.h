@@ -11,7 +11,7 @@ class UTILS_FEDE {
 private:
 
 public:
-    static bool LoadParams(string* params, string resultsFile, int numParams, bool showParams) {
+    static bool LoadParams(string* params, string filePath, int numParams) {
         /*
         The format is "...:(space)value(line break)"
         Exms: 
@@ -20,7 +20,7 @@ public:
         "t_0 gener-recomb: 5e-06 s" -> "5e-06 s"
         */
         char arrChar[1000];
-        ifstream inFile(resultsFile);
+        ifstream inFile(filePath);
         string numStr;
         int posI;
         int numParam = 0;
@@ -44,20 +44,13 @@ public:
                 } else {
                     numStr += arrChar[n];
                 }
-
             }
         }
         inFile.close();
         
         if(numParam != numParams) return false;
-        if(!showParams) return true;
-
-        cout << "The parameters are:" << endl;
-        for(int n = 0; n < numParam; n++) {
-            cout << params[n] << endl;
-        }
+        
         return true;
-
     };
     static streampos ObtainLastPosFile(string file) {
         streampos lastPosFile;

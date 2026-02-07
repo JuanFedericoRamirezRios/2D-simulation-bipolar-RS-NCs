@@ -1,0 +1,37 @@
+Experimental data: K-63-RT_exp_corrct.dat
+Structure layers: K-63-RT-shift.txt
+Output file of results: outFile.dat
+Seed of random number generator: 1
+
+N_LRS: 0.2
+N_HRS: -1.0
+Nfresh: -2.0
+Vforming (V): 5.1
+Vreset (V): -3.8
+Vset (V): 3.8
+Khrs (a.u.): 8e-20
+Klrs (a.u. cm3): 1e-30
+
+gammaSET for generation probb.: 4.6
+gammaRESET for generation probb.: 0.4
+phiDrift oxygen migrat: 8.0
+I compliance FORMING (A): 0.0001
+I compliance RESET (A): 0.0001
+I compliance SET (A): 0.0001
+a const. lattice (cm): 5e-08
+A Area device (cm2): 0.01
+
+Vo_ini Num initial Vos: 380
+t_0 gener-recomb (s): 5e-06
+E_Oe oxygen equilib. (eV): 1.0
+E_Om oxygen migrat. (eV): 1.0
+L_O decaying oxig. ion (a): 6.3
+beta0 recomb. factor: 6000000
+Rth thermal resistance (K/W): 900000
+Ao atten. electron wave (cm): 3.3e-08
+
+Num cycles: 1
+Nc (/cm3): 2.86e+19
+u (cm2/(V s)): 1450
+perm Relative dielect. const.: 11.9
+phi_t (Eg - trapVo) into Eg (V): 0.1
