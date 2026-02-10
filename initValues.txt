@@ -1,33 +1,33 @@
-Experimental data: K-63-RT_exp_corrct.dat
-Structure layers: K-63-RT-shift.txt
-Output file of results: outFile.dat
-Seed of random number generator: 1
+Experimental data: K-61-RT_exp_corrct.dat
+Structure layers: K-61-RT.txt
+Output file of results: outFile_K-61.dat
+Seed of random number generator: 6
 
 N_LRS: 0.2
-N_HRS: -1.0
-Nfresh: -2.0
-Vforming (V): 5.1
-Vreset (V): -3.8
-Vset (V): 3.8
-Khrs (a.u.): 8e-20
-Klrs (a.u. cm3): 1e-30
+N_HRS: -0.7
+Nfresh: -1.4
+Vforming (V): 4.3
+Vreset (V): -4.0
+Vset (V): 3.2
+Khrs (a.u.): 8e-23
+Klrs (a.u. cm3): 3e-35
 
 gammaSET for generation probb.: 4.6
 gammaRESET for generation probb.: 0.4
 phiDrift oxygen migrat: 8.0
-I compliance FORMING (A): 0.0001
-I compliance RESET (A): 0.0001
-I compliance SET (A): 0.0001
+I compliance FORMING (A): 8.0e-7
+I compliance RESET (A): 8.0e-7
+I compliance SET (A): 8.0e-7
 a const. lattice (cm): 5e-08
 A Area device (cm2): 0.01
 
-Vo_ini Num initial Vos: 380
+Vo_ini Num initial Vos: 40
 t_0 gener-recomb (s): 5e-06
-E_Oe oxygen equilib. (eV): 1.0
-E_Om oxygen migrat. (eV): 1.0
+E_Oe oxygen equilib. (eV): 1.1
+E_Om oxygen migrat. (eV): 1.1
 L_O decaying oxig. ion (a): 6.3
 beta0 recomb. factor: 6000000
-Rth thermal resistance (K/W): 900000
+Rth thermal resistance (K/W): 8.0e7
 Ao atten. electron wave (cm): 3.3e-08
 
 Num cycles: 1

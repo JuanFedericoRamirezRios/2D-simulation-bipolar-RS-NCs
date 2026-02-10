@@ -21,6 +21,10 @@ public:
         */
         char arrChar[1000];
         ifstream inFile(filePath);
+        if(!inFile) {
+            cerr << "Error: File " << filePath << " does not exist" << endl;
+            return false;
+        }
         string numStr;
         int posI;
         int numParam = 0;
@@ -55,6 +59,10 @@ public:
     static streampos ObtainLastPosFile(string file) {
         streampos lastPosFile;
         ifstream inFile(file);
+        if(!inFile) {
+            cerr << "Error: File " << file << " does not exist" << endl;
+            return lastPosFile;
+        }
         string textLine;
         while (getline(inFile, textLine)) lastPosFile = inFile.tellg();
         inFile.close();

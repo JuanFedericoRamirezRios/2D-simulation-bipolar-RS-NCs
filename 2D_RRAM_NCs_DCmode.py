@@ -70,7 +70,7 @@ class MAIN_FRAME(tk.Tk):
         s.a = [0.5E-7]           # cm
         s.A = [10.0E-3]            # cm2
 
-        # self.numVoIni = [0.0v
+        # self.numVoIni = [40]
         s.numVoIni = [380]
         s.stepTime0 = [5.0E-6] # sec
         # self.Eoe = [1.1]          # eV
@@ -84,7 +84,7 @@ class MAIN_FRAME(tk.Tk):
         s.Ao = [0.33E-7] # cm
 
         s.cycles = [1]
-        s.Nc = [2.86E19] # 1/cm3  from Park 2020: Electrical Defect State Distribution in Single Crystal ZnO Schottky Barrier Diodes
+        s.Nc = [2.86E19] # 1/cm3  For ZnO: 2.94e18 <- Park 2020: Electrical Defect State Distribution in Single Crystal ZnO Schottky Barrier Diodes
         s.u = [1450.0]   # cm2/(V sec)
         s.epsilon = [11.9]
         s.phit = [0.1] # V
@@ -251,10 +251,6 @@ class MAIN_FRAME(tk.Tk):
         #################################### End GUI ##########################################
 
     def PassInitValues(s, p):
-        
-        # s.textExp.set(p[0])
-        # s.textStructure.set(p[1])
-        # s.textOutput.set(p[2])
 
         try:
             s.textExp.set(p[0])
@@ -414,34 +410,7 @@ class MAIN_FRAME(tk.Tk):
 
         s.handle.Simula.argtypes = [ctypes.c_char_p] # c_char_p: c_char pointer
         s.handle.Simula(s.textOutput.get().encode())
-
-        """ 
-        s.outFile.write("Thickness: " + str(s.L) + "\n")
-        s.outFile.write("Rows: " + str(s.rows) + "\n")
-        s.outFile.write("Columns: " + str(s.columns) + "\n")
-
-        s.outFile.write("\n")
-        s.outFile.write("V (V)\tNs (a.u.)\tI (A)\tT (K)\tsumVos w/o ncs\tsumVos with ncs\tF_H (V/cm)\tv (cm/s)\tt (s)\tv*t (*a)\tIpf (A)\tIsclc (A)\tIpf*Khrs (A)\tIsclc*Klrs (A)\tFhrs\tFlrs\tIhrs (A)\tIlrs (A)\tnum procs" + "\n")
-        s.outFile.close() 
-        """
-
-        """
-        s.Forming(initVl = 0.0, endVl = s.Vforming[0], step = 0.1)
-        s.SweepProcess(initVl = s.Vforming[0], endVl = 0.0, step = -0.1)
-        s.ResetProcess(initVl = 0.0, endVl = s.Vreset[0], step = -0.1)
-        s.SweepProcess(initVl = s.Vreset[0], endVl = 0.0, step = 0.1)
-        for n in range(1, round(s.cycles[0]) + 1):
-            s.numProcess = n
-            s.SetProcess(initVl = 0.0, endVl = s.Vset[0], step = 0.1)
-            s.SweepProcess(initVl = s.Vset[0], endVl = 0.0, step = -0.1)
-            s.ResetProcess(initVl = 0.0, endVl = s.Vreset[0], step = -0.1)
-            s.SweepProcess(initVl = s.Vreset[0], endVl = 0.0, step = 0.1)
-        """
         
-        
-        # s.outFile.close()
-        
-        # s.openApp = False
         s.DrawData()
         print()
 
