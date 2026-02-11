@@ -5,6 +5,8 @@
 
  * If you use this software please cite: https://doi.org/10.3390/nano13142124
 
+ * Compile: pyinstaller --onefile --add-binary "CalcsCpp.dll;." 2D_RRAM_NCs_DCmode.py
+
  * GPL-3.0 license
 """
 
