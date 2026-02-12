@@ -56,11 +56,11 @@ public:
         
         return true;
     };
-    static streampos ObtainLastPosFile(string file) {
+    static streampos ObtainLastPosFile(string path) {
         streampos lastPosFile;
-        ifstream inFile(file);
+        ifstream inFile(path);
         if(!inFile) {
-            cerr << "Error: File " << file << " does not exist" << endl;
+            cerr << "Error: File " << path << " does not exist" << endl;
             return lastPosFile;
         }
         string textLine;
@@ -72,6 +72,12 @@ public:
         ostringstream oString;
         oString << std::setprecision(precision) << (num);
         return oString.str();
+    };
+    static ofstream OutInLastPos(string path) { // Be carefull, you must close ofstream.
+        streampos lastPosFile = ObtainLastPosFile(path);
+        ofstream outFile(path, ios::out | ios::in); // ios::out | ios::in avoid to erase contenent of file.
+        outFile.seekp(lastPosFile);
+        return outFile;
     };
     static string CppVersion() {
         long standard = __cplusplus;
