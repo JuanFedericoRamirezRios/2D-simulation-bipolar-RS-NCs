@@ -19,7 +19,6 @@ import matplotlib.pyplot as ppt
 import PythonUtilitiesFede as pu
 import matplotlib.colors
 import numpy as np
-
 import ctypes
 
 class MAIN_FRAME(tk.Tk):
@@ -112,11 +111,10 @@ class MAIN_FRAME(tk.Tk):
         s.phit = [0.1] # V
         # self.Easclc = [0.5] # eV . Ea = phit.
 
-        
-
         s.ReadInitValues(valuesInitPath, 33)
+        s.CreateGUI()
 
-        #################################### GUI ##########################################
+    def CreateGUI(s):
         # hframe1 = tk.Frame(s)
         # hframe1.pack(fill = "both", expand = True)
 
@@ -270,7 +268,6 @@ class MAIN_FRAME(tk.Tk):
         s.drawButton = tk.Button(master = vFrame2, text = "DRAW LAST SIMULATION", command = s.DrawLastSimulation)
         s.drawButton.pack(expand = True)
 
-        #################################### End GUI ##########################################
 
     def PassInitValues(s, p):
 
@@ -343,7 +340,6 @@ class MAIN_FRAME(tk.Tk):
     def DrawData(s): # Graphs of I-V and Ns-V
         ppt.figure("I Vs V").clear()
         ppt.figure("Ns Vs V").clear()
-        ppt.close("Vo configs")
 
         ppt.figure("I Vs V")
         ppt.grid(True)
@@ -379,17 +375,14 @@ class MAIN_FRAME(tk.Tk):
         ppt.pause(0.1) # Show the window graph in parallel.
 
     def Simulate(s):
-        
+        ppt.close("Vo configs")
+
         s.simulateButton.config(state = "disabled")
         s.drawButton.config(state = "disabled")
-        
-        # s.Init()
 
         if os.path.exists(s.textOutput.get()):            
             os.remove(s.textOutput.get())
-
         s.outFile = open(s.textOutput.get(), mode = "x") # "x" create a writable file
-
         s.outFile.write("Experimental data: " + s.textExp.get() + "\n")
         s.outFile.write("Structure layers: " + s.textStructure.get() + "\n")
         s.outFile.write("Seed of random number generator: " + str(s.seed[0]) + "\n")
@@ -427,11 +420,10 @@ class MAIN_FRAME(tk.Tk):
         s.outFile.write("perm Relative dielect. const.: " + str(s.epsilon[0]) + "\n")
         s.outFile.write("phi_t (Eg - trapVo) into Eg: " + str(s.phit[0]) + " V\n")
         s.outFile.write("\n")
-
         s.outFile.close() 
 
         s.InitSimulator(s.textOutput.get().encode())
-
+        s.SetContProc(0) 
         s.Forming(0.0, s.Vforming[0], 0.1)
         s.SweepProcess(s.Vforming[0], 0.0, -0.1)
         s.ResetProcess(0.0, s.Vreset[0], -0.1)
@@ -442,7 +434,6 @@ class MAIN_FRAME(tk.Tk):
             s.SweepProcess(s.Vset[0], 0.0, -0.1)
             s.ResetProcess(0.0, s.Vreset[0], -0.1)
             s.SweepProcess(s.Vreset[0], 0.0, 0.1)
-
         s.FreeSimulatorMemory()
 
         s.DrawData()
@@ -510,6 +501,9 @@ class MAIN_FRAME(tk.Tk):
         # ppt.pause(0.1)
     
     def DrawLastSimulation(s):
+        # ppt.close("I Vs V")
+        # ppt.close("Ns Vs V")
+
         s.simulateButton.config(state = "disabled")
         s.drawButton.config(state = "disabled")
 
@@ -569,19 +563,6 @@ class MAIN_FRAME(tk.Tk):
 
         
 if __name__ == "__main__":
-    
-    # window = tk.Tk()
-    # window.mainloop()
 
     App = MAIN_FRAME()
     App.mainloop()
-
-    # figNsV = ppt.figure("Ns Vs V")
-    # figIV = ppt.figure("I Vs V")
-    # ppt.grid()
-    # figNsV = Figure()
-    # figIV = Figure()
-    # graphNsV = FigureCanvasTkAgg(figNsV, master=App)
-    # graphIV = FigureCanvasTkAgg(figIV, master=App)
-    # graphNsV.draw()
-    # graphIV.draw()
