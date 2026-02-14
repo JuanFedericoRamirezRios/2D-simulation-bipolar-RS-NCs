@@ -29,6 +29,23 @@ class MAIN_FRAME(tk.Tk):
         s.geometry(f"{1500}x{580}")
         s.protocol("WM_DELETE_WINDOW", s.CloseProgram)
 
+        s.SetSharedLib()
+
+        print("")
+
+        s.minIview = 1e-18 # Amp
+
+        valuesInitPath = "initValues.txt"
+
+        s.SetDefectVals()
+
+        s.ReadInitValues(valuesInitPath, 33)
+
+        s.PrintValues()
+
+        s.CreateGUI()
+
+    def SetSharedLib(s):
         path = os.path.dirname(os.path.realpath(__file__))
         handle = ctypes.CDLL(path + "/CalcsCpp.dll", winmode=0) # winmode=0: Use unicode.
 
@@ -52,12 +69,7 @@ class MAIN_FRAME(tk.Tk):
 
         s.FreeSimulatorMemory = handle.FreeSimulatorMemory
 
-        print("")
-
-        s.minIview = 1e-18 # Amp
-
-        valuesInitPath = "initValues.txt"
-
+    def SetDefectVals(s):
         s.textExp = tk.StringVar(); s.textExp.set("K-63-RT_exp_corrct.dat")
         s.textStructure = tk.StringVar(); s.textStructure.set("K-63-RT-shift.txt")
         s.textOutput = tk.StringVar(); s.textOutput.set("outFile.dat")
@@ -111,8 +123,101 @@ class MAIN_FRAME(tk.Tk):
         s.phit = [0.1] # V
         # self.Easclc = [0.5] # eV . Ea = phit.
 
-        s.ReadInitValues(valuesInitPath, 33)
-        s.CreateGUI()
+    def ReadInitValues(s, filePath, numParams):
+        params = pu.LoadParams(filePath)
+        if params == None:
+            return
+        if len(params) != numParams:
+            print(f"Warning: The number of params in {filePath} is not {numParams}. Values by defect.")
+            return
+        s.PassInitValues(params)
+
+    def PassInitValues(s, p):
+        try:
+            s.textExp.set(p[0])
+            s.textStructure.set(p[1])
+            s.textOutput.set(p[2])
+            s.seed[0] = int(p[3])
+            if s.seed[0] < 1: 
+                print("Warning: seed must be > 0, now seed = 1")
+                s.seed[0] = 1
+
+            s.N_LRS[0] = float(p[4])
+            s.N_HRS[0] = float(p[5])
+            s.Nfresh[0] = float(p[6])
+            s.Vforming[0] = float(p[7])
+            s.Vreset[0] = float(p[8])
+            s.Vset[0] = float(p[9])
+            s.Khrs[0] = float(p[10])
+            s.Klrs[0] = float(p[11])
+
+            s.gammaSET[0] = float(p[12])
+            s.gammaRESET[0] = float(p[13])
+            s.phiDrift[0] = float(p[14])
+            s.complIforming[0] = float(p[15])
+            s.complIreset[0] = float(p[16])
+            s.complIset[0] = float(p[17])
+            s.a[0] = float(p[18])
+            s.A[0] = float(p[19])
+
+            s.numVoIni[0] = int(p[20])
+            s.stepTime0[0] = float(p[21])
+            s.Eoe[0] = float(p[22])
+            s.Eom[0] = float(p[23])
+            s.Lo[0] = float(p[24])
+            s.beta0[0] = float(p[25])
+            s.Rth[0] = float(p[26])
+            s.Ao[0] = float(p[27])
+
+            s.cycles[0] = int(p[28])
+            s.Nc[0] = float(p[29])
+            s.u[0] = float(p[30])
+            s.epsilon[0] = float(p[31])
+            s.phit[0] = float(p[32])       
+            
+        except ValueError as e:
+            print("Error:", e)
+
+    def PrintValues(s):
+        print(
+            "textExp =", s.textExp.get(), "\n",
+            "textStructure =", s.textStructure.get(), "\n",
+            "textOutput =", s.textOutput.get(), "\n",
+            "seed =", s.seed[0], "\n",
+
+            "N_LRS =", s.N_LRS[0], "\n",
+            "N_HRS =", s.N_HRS[0], "\n",
+            "Nfresh =", s.Nfresh[0], "\n",
+            "Vforming =", s.Vforming[0], "\n",
+            "Vreset =", s.Vreset[0], "\n",
+            "Vset =", s.Vset[0], "\n",
+            "Khrs =", s.Khrs[0], "\n",
+            "Klrs =", s.Klrs[0], "\n",
+
+            "gammaSET =", s.gammaSET[0], "\n",
+            "gammaRESET =", s.gammaRESET[0], "\n",
+            "phiDrift =", s.phiDrift[0], "\n",
+            "complIforming =", s.complIforming[0], "\n",
+            "complIreset =", s.complIreset[0], "\n",
+            "complIset =", s.complIset[0], "\n",
+            "a =", s.a[0], "\n",
+            "A =", s.A[0], "\n",
+
+            "numVoIni =", s.numVoIni[0], "\n",
+            "stepTime0 =", s.stepTime0[0], "\n",
+            "Eoe =", s.Eoe[0], "\n",
+            "Eom =", s.Eom[0], "\n",
+            "Lo =", s.Lo[0], "\n",
+            "beta0 =", s.beta0[0], "\n",
+            "Rth =", s.Rth[0], "\n",
+            "Ao =", s.Ao[0], "\n",
+
+            "cycles =", s.cycles[0], "\n",
+            "Nc =", s.Nc[0], "\n",
+            "u =", s.u[0], "\n",
+            "epsilon =", s.epsilon[0], "\n",
+            "phit =", s.phit[0], "\n"
+        )
 
     def CreateGUI(s):
         # hframe1 = tk.Frame(s)
@@ -141,11 +246,11 @@ class MAIN_FRAME(tk.Tk):
         VsetControls = NC.CONTROLS_VALUE(master = s, name = "Vreset", units = "V", value = s.Vset)
         VsetControls.grid(column = 5, row = 0, sticky = "nsew")
 
-        KpfControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "K_HRS", units = "au", value = s.Khrs)
-        KpfControls.grid(column = 6, row = 0, sticky = "nsew")
+        KhrsControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "K_HRS", units = "au", value = s.Khrs)
+        KhrsControls.grid(column = 6, row = 0, sticky = "nsew")
 
-        KsclcControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "K_LRS", units = "au-cm3", value = s.Klrs)
-        KsclcControls.grid(column = 7, row = 0, sticky = "nsew")
+        KlrsControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "K_LRS", units = "au-cm3", value = s.Klrs)
+        KlrsControls.grid(column = 7, row = 0, sticky = "nsew")
 
         ########################
 
@@ -268,63 +373,6 @@ class MAIN_FRAME(tk.Tk):
         s.drawButton = tk.Button(master = vFrame2, text = "DRAW LAST SIMULATION", command = s.DrawLastSimulation)
         s.drawButton.pack(expand = True)
 
-
-    def PassInitValues(s, p):
-
-        try:
-            s.textExp.set(p[0])
-            s.textStructure.set(p[1])
-            s.textOutput.set(p[2])
-            s.seed[0] = int(p[3])
-            if s.seed[0] < 1: 
-                print("Warning: seed must be > 0, now seed = 1")
-                s.seed[0] = 1
-
-            s.N_LRS[0] = float(p[4])
-            s.N_HRS[0] = float(p[5])
-            s.Nfresh[0] = float(p[6])
-            s.Vforming[0] = float(p[7])
-            s.Vreset[0] = float(p[8])
-            s.Vset[0] = float(p[9])
-            s.Khrs[0] = float(p[10])
-            s.Klrs[0] = float(p[11])
-
-            s.gammaSET[0] = float(p[12])
-            s.gammaRESET[0] = float(p[13])
-            s.phiDrift[0] = float(p[14])
-            s.complIforming[0] = float(p[15])
-            s.complIreset[0] = float(p[16])
-            s.complIset[0] = float(p[17])
-            s.a[0] = float(p[18])
-            s.A[0] = float(p[19])
-
-            s.numVoIni[0] = int(p[20])
-            s.stepTime0[0] = float(p[21])
-            s.Eoe[0] = float(p[22])
-            s.Eom[0] = float(p[23])
-            s.Lo[0] = float(p[24])
-            s.beta0[0] = float(p[25])
-            s.Rth[0] = float(p[26])
-            s.Ao[0] = float(p[27])
-
-            s.cycles[0] = int(p[28])
-            s.Nc[0] = float(p[29])
-            s.u[0] = float(p[30])
-            s.epsilon[0] = float(p[31])
-            s.phit[0] = float(p[32])       
-            
-        except ValueError as e:
-            print("Error:", e)
-
-    def ReadInitValues(s, filePath, numParams) -> None:
-        params = pu.LoadParams(filePath)
-        if params == None:
-            return
-        if len(params) != numParams:
-            print(f"Warning: The number of params in {filePath} is not {numParams}")
-            return
-        s.PassInitValues(params)
-    
     def ChangeSeed(s, *args):
         try:
             newValue = int(s.textSeed.get())
@@ -337,49 +385,35 @@ class MAIN_FRAME(tk.Tk):
             s.seed[0] = 1
             s.textSeed.set("1")
 
-    def DrawData(s): # Graphs of I-V and Ns-V
-        ppt.figure("I Vs V").clear()
-        ppt.figure("Ns Vs V").clear()
-
-        ppt.figure("I Vs V")
-        ppt.grid(True)
-        ppt.xlabel("Voltage (V)")
-        ppt.ylabel("Current (A)")
-        ppt.ylim(bottom=s.minIview)
-        print("Drawing the experimental data")
-
-        dfExp = pd.read_csv(s.textExp.get(), sep = "\t", usecols= ["V (V)", "I (A)"])
-        # print("Data number = " + str(len(dfExp)))
-        ppt.semilogy(dfExp["V (V)"], dfExp["I (A)"], "-") # "-": points joined by lines.
-        print("Drawing the calculated data")
-
-        lineHead, _, __ = pu.FindInPlainText(s.textOutput.get(), "V (V)\t")
-        if lineHead == None:
-            print("Error: Not find Headers line in the outputFile")
-            return
-        dfSim = pd.read_csv(s.textOutput.get(), sep = "\t", usecols= ["V (V)", "Ns (a.u.)", "I (A)"], skiprows=lineHead) # If the data start after of headers, It is could use parameter header=.
-        # print("Data number = " + str(len(dfSim)))
-        ppt.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-") # "-": points joined by lines.
-        # ppt.savefig("grafica_I-V.png")
-        ppt.pause(0.1) # Show the window graph in parallel.
-
-        # if s.openApp:
-        #     return
-        
-        ppt.figure("Ns Vs V")
-        ppt.grid(True)
-        ppt.xlabel("Voltage (V)")
-        ppt.ylabel("Ns (a.u.)")
-        ppt.plot(dfSim["V (V)"], dfSim["Ns (a.u.)"], "-") # "-": points joined by lines.
-        # ppt.savefig("grafica_Ns-V.png")
-        ppt.pause(0.1) # Show the window graph in parallel.
-
     def Simulate(s):
         ppt.close("Vo configs")
 
         s.simulateButton.config(state = "disabled")
         s.drawButton.config(state = "disabled")
 
+        s.WriteValsOutFile()
+
+        s.InitSimulator(s.textOutput.get().encode())
+        s.SetContProc(0) 
+        s.Forming(0.0, s.Vforming[0], 0.1)
+        s.SweepProcess(s.Vforming[0], 0.0, -0.1)
+        s.ResetProcess(0.0, s.Vreset[0], -0.1)
+        s.SweepProcess(s.Vreset[0], 0.0, 0.1)
+        for n in range(1, int(s.cycles[0])+1):
+            s.SetContProc(n)  
+            s.SetProcess(0.0, s.Vset[0], 0.1)
+            s.SweepProcess(s.Vset[0], 0.0, -0.1)
+            s.ResetProcess(0.0, s.Vreset[0], -0.1)
+            s.SweepProcess(s.Vreset[0], 0.0, 0.1)
+        s.FreeSimulatorMemory()
+
+        s.DrawData()
+        print()
+
+        s.simulateButton.config(state = "active")
+        s.drawButton.config(state = "active")
+
+    def WriteValsOutFile(s):
         if os.path.exists(s.textOutput.get()):            
             os.remove(s.textOutput.get())
         s.outFile = open(s.textOutput.get(), mode = "x") # "x" create a writable file
@@ -420,27 +454,119 @@ class MAIN_FRAME(tk.Tk):
         s.outFile.write("perm Relative dielect. const.: " + str(s.epsilon[0]) + "\n")
         s.outFile.write("phi_t (Eg - trapVo) into Eg: " + str(s.phit[0]) + " V\n")
         s.outFile.write("\n")
-        s.outFile.close() 
+        s.outFile.close()
 
-        s.InitSimulator(s.textOutput.get().encode())
-        s.SetContProc(0) 
-        s.Forming(0.0, s.Vforming[0], 0.1)
-        s.SweepProcess(s.Vforming[0], 0.0, -0.1)
-        s.ResetProcess(0.0, s.Vreset[0], -0.1)
-        s.SweepProcess(s.Vreset[0], 0.0, 0.1)
-        for n in range(1, int(s.cycles[0])+1):
-            s.SetContProc(n)  
-            s.SetProcess(0.0, s.Vset[0], 0.1)
-            s.SweepProcess(s.Vset[0], 0.0, -0.1)
-            s.ResetProcess(0.0, s.Vreset[0], -0.1)
-            s.SweepProcess(s.Vreset[0], 0.0, 0.1)
-        s.FreeSimulatorMemory()
+    def DrawData(s): # Graphs of I-V and Ns-V
+        dfExp = pd.read_csv(s.textExp.get(), sep = "\t", usecols= ["V (V)", "I (A)"])
+        # print("Data number = " + str(len(dfExp)))
 
-        s.DrawData()
-        print()
+        dfSim = s.ObtainDfSim()
+
+        ppt.figure("I Vs V").clear()
+        ppt.figure("I Vs V")
+        ppt.grid(True)
+        ppt.xlabel("Voltage (V)")
+        ppt.ylabel("Current (A)")
+        ppt.ylim(bottom=s.minIview)
+        print("Drawing the experimental data")
+        ppt.semilogy(dfExp["V (V)"], dfExp["I (A)"], "-") # "-": points joined by lines.
+        print("Drawing the calculated data")
+        ppt.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-") # "-": points joined by lines.
+        # ppt.savefig("grafica_I-V.png")
+        ppt.pause(0.1) # Show the window graph in parallel.
+
+        ppt.figure("Ns Vs V").clear()
+        ppt.figure("Ns Vs V")
+        ppt.grid(True)
+        ppt.xlabel("Voltage (V)")
+        ppt.ylabel("Ns (a.u.)")
+        ppt.plot(dfSim["V (V)"], dfSim["Ns (a.u.)"], "-") # "-": points joined by lines.
+        # ppt.savefig("grafica_Ns-V.png")
+        ppt.pause(0.1) # Show the window graph in parallel.
+    
+    def ObtainDfSim(s):
+        lineHead, _, __ = pu.FindInPlainText(s.textOutput.get(), "V (V)\t")
+        if lineHead == None:
+            print("Error: Not find Headers line in the outputFile")
+            return
+        return pd.read_csv(s.textOutput.get(), sep = "\t", usecols= ["V (V)", "Ns (a.u.)", "I (A)"], skiprows=lineHead) # If the data start after of headers, It is could use parameter header=.
+        # print("Data number = " + str(len(dfSim)))
+
+    def DrawLastSimulation(s):
+        # ppt.close("I Vs V")
+        # ppt.close("Ns Vs V")
+
+        s.simulateButton.config(state = "disabled")
+        s.drawButton.config(state = "disabled")
+
+        dfSim = s.ObtainDfSim()
+
+        ppt.figure("Vo configs").clear()
+        ppt.figure("Vo configs")
+        ppt.figure("Vo configs").set_size_inches((12.8, 4))
+
+        VoConfig = ppt.subplot2grid((1,3), (0,0))
+
+        IVsubPlot = ppt.subplot2grid((1,3), (0,1))
+        IVsubPlot.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-")
+        IVsubPlot.set_xlabel("V (V)"); IVsubPlot.set_ylabel("I (A)")
+        IVsubPlot.set_ylim(bottom=s.minIview)
+        s.scaIV = IVsubPlot.scatter([0], [0], s=100, c="red") # Create a point to avoid errors in PaintVoConfigINsV() when s.scaIV.remove()
+        
+        NsVsubPlot = ppt.subplot2grid((1,3), (0,2))
+        NsVsubPlot.plot(dfSim["V (V)"], dfSim["Ns (a.u.)"], "-")
+        NsVsubPlot.set_xlabel("V (V)"); NsVsubPlot.set_ylabel("Ns (a.u.)")
+        s.scaNsV = NsVsubPlot.scatter([0], [0], s=100, c="red") # Create a point to avoid errors in PaintVoConfigINsV() when s.scaNsV.remove()
+
+        inList = glob.glob('./configurations/*.txt')
+        if len(inList) != dfSim.shape[0]:
+            print("Error: number files != number data")
+            return
+        print(f"Drawing {len(inList)} VoConfigurations:", end=' ')
+
+        os.system("rmdir /s /q \"confsPng\"")
+        os.system("md \"confsPng\"")
+        # s.PaintVoConfigINsV("./confsPng/00000000 example.png", s.ReadStructure(inList[100]), dfSim,VoConfig, IVsubPlot, NsVsubPlot, 100)
+        c = 0
+        for n, inPath in enumerate(inList):
+            fileName = os.path.basename(inPath)[:-4]
+            outPath = './confsPng/' + fileName + ".png"
+            s.PaintVoConfigINsV(outPath, s.ReadStructure(inPath), dfSim, VoConfig, IVsubPlot, NsVsubPlot, n)
+            c = pu.PrintValStatic(c, f"{n+1}")
 
         s.simulateButton.config(state = "active")
         s.drawButton.config(state = "active")
+        print()
+
+    def PaintVoConfigINsV(s, outPath, map, dfSim, VoConfig, IVsubPlot, NsVsubPlot, nData):
+        VoConfig.clear()
+        s.PlotVoConfig(VoConfig, map, dfSim, nData)
+
+        s.scaIV.remove()
+        s.scaNsV.remove()
+
+        I = dfSim.loc[nData, 'I (A)']
+        if I < s.minIview: I = s.minIview
+
+        s.scaIV = IVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [I], s=100, c="red")
+        s.scaNsV = NsVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'Ns (a.u.)']], s=100, c="red")
+
+        ppt.tight_layout() # Prevents overlapping of titles and labels.
+        ppt.savefig(outPath)
+        
+        # ppt.pause(0.1)
+
+    def PlotVoConfig(s, subPlot, map, dfSim, nData):
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom', ['white', (0,1,0), 'blue'])
+
+        subPlot.imshow(map, cmap=cmap, interpolation='nearest')
+        subPlot.set_xlabel("columns"); subPlot.set_ylabel("rows")
+        # subPlot.figure(figsize=(8,6))
+        subPlot.set_title("Sim: " 
+                  + str(dfSim.loc[nData, 'V (V)']) + "V, " 
+                  + "Ns=" + "{:.2E}".format(dfSim.loc[nData, "Ns (a.u.)"]) + ", "
+                  + "{:.2E}".format(dfSim.loc[nData, 'I (A)']) + "A"
+                  )
 
     def ReadStructure(s, inPath):
         map = [[]]
@@ -462,98 +588,6 @@ class MAIN_FRAME(tk.Tk):
                     map.append([])
                     row = row + 1
         return np.array(map)
-
-    def PlotVoConfig(s, subPlot, map, dfSim, nData):
-        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom', ['white', (0,1,0), 'blue'])
-
-        subPlot.imshow(map, cmap=cmap, interpolation='nearest')
-        subPlot.set_xlabel("columns"); subPlot.set_ylabel("rows")
-        # subPlot.figure(figsize=(8,6))
-        subPlot.set_title("Sim: " 
-                  + str(dfSim.loc[nData, 'V (V)']) + "V, " 
-                  + "Ns=" + "{:.2E}".format(dfSim.loc[nData, "Ns (a.u.)"]) + ", "
-                  + "{:.2E}".format(dfSim.loc[nData, 'I (A)']) + "A"
-                  )
-
-    def PlotIV(s, subPlot, dfSim):
-        return
-
-    def PlotNsV(s, subPlot, dfSim):
-        return
-    
-    def PaintVoConfigINsV(s, outPath, map, dfSim, VoConfig, IVsubPlot, NsVsubPlot, nData):
-        VoConfig.clear()
-        s.PlotVoConfig(VoConfig, map, dfSim, nData)
-
-        s.scaIV.remove()
-        s.scaNsV.remove()
-
-        
-        I = dfSim.loc[nData, 'I (A)']
-        if I < s.minIview: I = s.minIview
-
-        s.scaIV = IVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [I], s=100, c="red")
-        s.scaNsV = NsVsubPlot.scatter([dfSim.loc[nData, 'V (V)']], [dfSim.loc[nData, 'Ns (a.u.)']], s=100, c="red")
-
-        ppt.tight_layout() # Prevents overlapping of titles and labels.
-        ppt.savefig(outPath)
-        
-        # ppt.pause(0.1)
-    
-    def DrawLastSimulation(s):
-        # ppt.close("I Vs V")
-        # ppt.close("Ns Vs V")
-
-        s.simulateButton.config(state = "disabled")
-        s.drawButton.config(state = "disabled")
-
-        ppt.figure("Vo configs").clear()
-        ppt.figure("Vo configs")
-        ppt.figure("Vo configs").set_size_inches((12.8, 4))
-        
-        inList = glob.glob('./configurations/*.txt')
-
-        lineHead, _, __ = pu.FindInPlainText(s.textOutput.get(), "V (V)\t")
-        if lineHead == None:
-            print("Error: Not find Headers line in the outputFile")
-            return
-        dfSim = pd.read_csv(s.textOutput.get(), sep = "\t", usecols= ["V (V)", "Ns (a.u.)", "I (A)"], skiprows=lineHead)
-
-        if len(inList) != dfSim.shape[0]:
-            print("Error: number files != number data")
-            return
-        print(f"Drawing {len(inList)} VoConfigurations:", end=' ')
-
-        os.system("rmdir /s /q \"confsPng\"")
-        os.system("md \"confsPng\"")
-
-        VoConfig = ppt.subplot2grid((1,3), (0,0))
-
-        IVsubPlot = ppt.subplot2grid((1,3), (0,1))
-        IVsubPlot.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-")
-        IVsubPlot.set_xlabel("V (V)"); IVsubPlot.set_ylabel("I (A)")
-        IVsubPlot.set_ylim(bottom=s.minIview)
-        s.scaIV = IVsubPlot.scatter([0], [0], s=100, c="red") # Create a point to avoid errors in PaintVoConfigINsV() when s.scaIV.remove()
-        
-        NsVsubPlot = ppt.subplot2grid((1,3), (0,2))
-        NsVsubPlot.plot(dfSim["V (V)"], dfSim["Ns (a.u.)"], "-")
-        NsVsubPlot.set_xlabel("V (V)"); NsVsubPlot.set_ylabel("Ns (a.u.)")
-        s.scaNsV = NsVsubPlot.scatter([0], [0], s=100, c="red") # Create a point to avoid errors in PaintVoConfigINsV() when s.scaNsV.remove()
-
-        # s.PaintVoConfigINsV("./confsPng/00000000 example.png", s.ReadStructure(inList[100]), dfSim,VoConfig, IVsubPlot, NsVsubPlot, 100)
-
-        c = 0
-        for n, inPath in enumerate(inList):
-            fileName = os.path.basename(inPath)[:-4]
-            outPath = './confsPng/' + fileName + ".png"
-            s.PaintVoConfigINsV(outPath, s.ReadStructure(inPath), dfSim, VoConfig, IVsubPlot, NsVsubPlot, n)
-            c = pu.PrintValStatic(c, f"{n+1}")
-
-        print()
-        
-        s.simulateButton.config(state = "active")
-        s.drawButton.config(state = "active")
-        print()
 
     def CloseProgram(s):
         ppt.close("I Vs V")

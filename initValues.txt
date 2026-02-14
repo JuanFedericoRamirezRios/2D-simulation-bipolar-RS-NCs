@@ -1,3 +1,8 @@
+THESE ARE THE INITIAL CONDITIONS
+
+The format of data must be    (Description) (colon or two periods)(space)(data or value) (endLine)
+Example                    Experimental data(colon or two periods) K-61-RT_exp_corrct.dat(endLine)
+
 Experimental data: K-61-RT_exp_corrct.dat
 Structure layers: K-61-RT.txt
 Output file of results: outFile_K-61.dat
