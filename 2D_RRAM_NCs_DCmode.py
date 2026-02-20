@@ -9,6 +9,7 @@
 
  * GPL-3.0 license
 """
+valuesInitPath = "initValues.txt"
 
 import tkinter as tk
 import pandas as pd
@@ -35,13 +36,13 @@ class MAIN_FRAME(tk.Tk):
 
         s.minIview = 1e-18 # Amp
 
-        valuesInitPath = "initValues.txt"
+        
 
         s.SetDefectVals()
 
         s.ReadInitValues(valuesInitPath, 33)
 
-        s.PrintValues()
+        # s.PrintValues()
 
         s.CreateGUI()
 
@@ -70,8 +71,8 @@ class MAIN_FRAME(tk.Tk):
         s.FreeSimulatorMemory = handle.FreeSimulatorMemory
 
     def SetDefectVals(s):
-        s.textExp = tk.StringVar(); s.textExp.set("K-63-RT_exp_corrct.dat")
-        s.textStructure = tk.StringVar(); s.textStructure.set("K-63-RT-shift.txt")
+        s.textExp = tk.StringVar(); s.textExp.set("Experimental_data.dat")
+        s.textStructure = tk.StringVar(); s.textStructure.set("2Dstructure.txt")
         s.textOutput = tk.StringVar(); s.textOutput.set("outFile.dat")
         s.seed = [1]
 
@@ -243,7 +244,7 @@ class MAIN_FRAME(tk.Tk):
         VresetControls = NC.CONTROLS_VALUE(master = s, name = "Vreset", units = "V", value = s.Vreset)
         VresetControls.grid(column = 4, row = 0, sticky = "nsew")
 
-        VsetControls = NC.CONTROLS_VALUE(master = s, name = "Vreset", units = "V", value = s.Vset)
+        VsetControls = NC.CONTROLS_VALUE(master = s, name = "Vset", units = "V", value = s.Vset)
         VsetControls.grid(column = 5, row = 0, sticky = "nsew")
 
         KhrsControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "K_HRS", units = "au", value = s.Khrs)
@@ -457,8 +458,9 @@ class MAIN_FRAME(tk.Tk):
         s.outFile.close()
 
     def DrawData(s): # Graphs of I-V and Ns-V
-        dfExp = pd.read_csv(s.textExp.get(), sep = "\t", usecols= ["V (V)", "I (A)"])
-        # print("Data number = " + str(len(dfExp)))
+        if os.path.exists(s.textExp.get()):
+            dfExp = pd.read_csv(s.textExp.get(), sep = "\t", usecols= ["V (V)", "I (A)"])
+            # print("Experimental data number = " + str(len(dfExp)))
 
         dfSim = s.ObtainDfSim()
 
@@ -468,8 +470,9 @@ class MAIN_FRAME(tk.Tk):
         ppt.xlabel("Voltage (V)")
         ppt.ylabel("Current (A)")
         ppt.ylim(bottom=s.minIview)
-        print("Drawing the experimental data")
-        ppt.semilogy(dfExp["V (V)"], dfExp["I (A)"], "-") # "-": points joined by lines.
+        if os.path.exists(s.textExp.get()):
+            print("Drawing the experimental data")
+            ppt.semilogy(dfExp["V (V)"], dfExp["I (A)"], "-") # "-": points joined by lines.
         print("Drawing the calculated data")
         ppt.semilogy(dfSim["V (V)"], dfSim["I (A)"], "-") # "-": points joined by lines.
         # ppt.savefig("grafica_I-V.png")
