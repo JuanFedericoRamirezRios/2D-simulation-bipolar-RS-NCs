@@ -10,6 +10,7 @@
  * GPL-3.0 license
 """
 valuesInitPath = "initValues.txt"
+minIview = 1e-18 # Amp
 
 import tkinter as tk
 import pandas as pd
@@ -34,13 +35,11 @@ class MAIN_FRAME(tk.Tk):
 
         print("")
 
-        s.minIview = 1e-18 # Amp
+        s.minIview = minIview # Amp
 
-        
+        s.SetDefaultVals()
 
-        s.SetDefectVals()
-
-        s.ReadInitValues(valuesInitPath, 33)
+        s.ReadInitValues(valuesInitPath, 31)
 
         # s.PrintValues()
 
@@ -70,7 +69,7 @@ class MAIN_FRAME(tk.Tk):
 
         s.FreeSimulatorMemory = handle.FreeSimulatorMemory
 
-    def SetDefectVals(s):
+    def SetDefaultVals(s):
         s.textExp = tk.StringVar(); s.textExp.set("Experimental_data.dat")
         s.textStructure = tk.StringVar(); s.textStructure.set("2Dstructure.txt")
         s.textOutput = tk.StringVar(); s.textOutput.set("outFile.dat")
@@ -88,9 +87,9 @@ class MAIN_FRAME(tk.Tk):
         # self.Vset = [3.2]      # V
         s.Vset = [3.8]      # V
         # self.Khrs = [8.0E-23]  # u.a.
-        s.Khrs = [8.0e-20]  # u.a.
+        s.Khrs = [3.3]  # u.a.
         # self.Klrs = [3.0E-35]  # u.a. * cm3
-        s.Klrs = [1.0E-30]  # u.a. * cm3
+        s.Klrs = [8.2e-6]  # u.a. * cm3
 
         s.gammaSET = [4.6]
         s.gammaRESET = [0.4]
@@ -118,8 +117,8 @@ class MAIN_FRAME(tk.Tk):
         s.Ao = [0.33E-7] # cm
 
         s.cycles = [1]
-        s.Nc = [2.86E19] # 1/cm3  For ZnO: 2.94e18 <- Park 2020: Electrical Defect State Distribution in Single Crystal ZnO Schottky Barrier Diodes
-        s.u = [1450.0]   # cm2/(V sec)
+        # s.Nc = [2.86E19] # 1/cm3  For ZnO: 2.94e18 <- Park 2020: Electrical Defect State Distribution in Single Crystal ZnO Schottky Barrier Diodes
+        # s.u = [1450.0]   # cm2/(V sec)
         s.epsilon = [11.9]
         s.phit = [0.1] # V
         # self.Easclc = [0.5] # eV . Ea = phit.
@@ -171,10 +170,10 @@ class MAIN_FRAME(tk.Tk):
             s.Ao[0] = float(p[27])
 
             s.cycles[0] = int(p[28])
-            s.Nc[0] = float(p[29])
-            s.u[0] = float(p[30])
-            s.epsilon[0] = float(p[31])
-            s.phit[0] = float(p[32])       
+            # s.Nc[0] = float(p[29])
+            # s.u[0] = float(p[30])
+            s.epsilon[0] = float(p[29])
+            s.phit[0] = float(p[30])       
             
         except ValueError as e:
             print("Error:", e)
@@ -214,8 +213,8 @@ class MAIN_FRAME(tk.Tk):
             "Ao =", s.Ao[0], "\n",
 
             "cycles =", s.cycles[0], "\n",
-            "Nc =", s.Nc[0], "\n",
-            "u =", s.u[0], "\n",
+            # "Nc =", s.Nc[0], "\n",
+            # "u =", s.u[0], "\n",
             "epsilon =", s.epsilon[0], "\n",
             "phit =", s.phit[0], "\n"
         )
@@ -319,17 +318,17 @@ class MAIN_FRAME(tk.Tk):
         cyclesControls = NC.CONTROLS_VALUE(master = s, name = "cycles", units = "", value = s.cycles)
         cyclesControls.grid(column = 0, row = 3, sticky = "nsew")
 
-        NcControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "Nc", units = "/cm3", value = s.Nc)
-        NcControls.grid(column = 1, row = 3, sticky = "nsew")
+        # NcControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "Nc", units = "/cm3", value = s.Nc)
+        # NcControls.grid(column = 1, row = 3, sticky = "nsew")
 
-        uControls = NC.CONTROLS_VALUE(master = s, name = "u", units = "cm2/V-s", value = s.u)
-        uControls.grid(column = 2, row = 3, sticky = "nsew")
+        # uControls = NC.CONTROLS_VALUE(master = s, name = "u", units = "cm2/V-s", value = s.u)
+        # uControls.grid(column = 2, row = 3, sticky = "nsew")
 
         epsilonControls = NC.CONTROLS_VALUE(master = s, name = "perm", units = "", value = s.epsilon)
-        epsilonControls.grid(column = 3, row = 3, sticky = "nsew")
+        epsilonControls.grid(column = 1, row = 3, sticky = "nsew")
 
         phitControls = NC.CONTROLS_VALUE(master = s, name = "phit", units = "´V", value = s.phit)
-        phitControls.grid(column = 4, row = 3, sticky = "nsew")
+        phitControls.grid(column = 2, row = 3, sticky = "nsew")
 
         vFrame1 = tk.Frame(s)
         vFrame1.grid(column = 6, row = 3, sticky = "nsew")
@@ -450,8 +449,8 @@ class MAIN_FRAME(tk.Tk):
         s.outFile.write("Ao atten. electron wave: " + str(s.Ao[0]) + " cm\n")
         s.outFile.write("\n")
         s.outFile.write("Num cycles: " + str(s.cycles[0]) + "\n")
-        s.outFile.write("Nc: " + str(s.Nc[0]) + " /cm3\n")
-        s.outFile.write("u: " + str(s.u[0]) + " cm2/(V s)\n")
+        # s.outFile.write("Nc: " + str(s.Nc[0]) + " /cm3\n")
+        # s.outFile.write("u: " + str(s.u[0]) + " cm2/(V s)\n")
         s.outFile.write("perm Relative dielect. const.: " + str(s.epsilon[0]) + "\n")
         s.outFile.write("phi_t (Eg - trapVo) into Eg: " + str(s.phit[0]) + " V\n")
         s.outFile.write("\n")
