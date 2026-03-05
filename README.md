@@ -8,12 +8,9 @@
 
 ## The simulation model
 The simulation model is explained in [2D-simulation-model](https://doi.org/10.3390/nano13142124) and the electrical current calculation, equations (8) and (9) was modified to best adjust to experiment results by:
-- 
+
 $$
-J_{HRS}=K_{HRS}f_{HRS}\left[\left|F^H\right|\exp{\left(\frac{\beta\sqrt{\left|F^H\right|}-q\phi_t}{kT_r}\right)}\right] \text{\quad\quad(8)}
-$$
-- 
-$$
+J_{HRS}=K_{HRS}f_{HRS}\left[\left|F^H\right|\exp{\left(\frac{\beta\sqrt{\left|F^H\right|}-q\phi_t}{kT_r}\right)}\right] \text{\quad\quad(8)} \\
 J_{LRS}=K_{LRS}\frac{f_{LRS}}{N_S-N_{FS}}\left[\frac{\left(F^H\right)^2}{L}\exp{\left(\frac{0.891\beta\sqrt{\left|F^H\right|}-q\phi_t}{kT_J}\right)}\right] \text{\quad\quad(9)} 
 $$
 
