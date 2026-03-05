@@ -55,16 +55,24 @@ The graphical user interface to change the values of simulation is:
 - $\varepsilon$: Relative electrical permittivity.
 - $\phi_t$: Potential of the trap levels for charge conductivity.
 
-- Experiment: Name of OPTIONAL plain text file with the experimental $I-V$ results to compare with $I-V$ simulated. The format must be: \\
-&emsp;1st line: V (V)`tab`I (A) \\
-&emsp;2nd line: 1st voltage`tab`1st current \\
-&emsp;3rd line: 2nd voltage`tab`2nd current \\
+- Experiment: Name of OPTIONAL plain text file with the experimental $I-V$ results to compare with $I-V$ simulated. The format must be:
+
+&emsp;1st line: V (V)`tab`I (A)
+
+&emsp;2nd line: 1st voltage`tab`1st current
+
+&emsp;3rd line: 2nd voltage`tab`2nd current
+
 &emsp; &emsp; &emsp; &emsp; &emsp; ...
 
-- Structure: Name of plain text file with nanocrystals configuration. With: \\
-&emsp;0 → Not $V_O$. \\
-&emsp;1 → $V_O$. \\
-&emsp;2 → Fixed $V_O$, these are the nanocrystals. \\
+- Structure: Name of plain text file with nanocrystals configuration. With:
+
+&emsp;0 → Not $V_O$.
+
+&emsp;1 → $V_O$.
+
+&emsp;2 → Fixed $V_O$, these are the nanocrystals.
+
 Examples in the files: [K-61-RT.txt](K-61-RT.txt) and [K-63-RT-shift.txt](K-63-RT-shift.txt).
 I recommend using the graphical editor of plain text online: https://asciiflow.com/
 - Out file: Name of out data simulation results (**WARNING**: If it exists, this will be remplaced).
