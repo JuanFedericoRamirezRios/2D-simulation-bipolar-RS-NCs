@@ -20,6 +20,9 @@ $$
 J_{LRS}=K_{LRS}\frac{f_{LRS}}{N_S-N_{FS}}\left[\frac{\left(F^H\right)^2}{L}\exp{\left(\frac{0.891\beta\sqrt{\left|F^H\right|}-q\phi_t}{kT_J}\right)}\right] \text{\quad\quad(9)} 
 $$
 
+## Simulation conditions
+The simulation conditions can be specified in the initValues.txt before running **2D_RRAM_NCs_DCmode** or selected via the graphical user interface (GUI). A description of each feature is defined in [2D-simulation-model](https://doi.org/10.3390/nano13142124).
+
 ## GUI
 The graphical user interface to change the values of simulation is:
 
@@ -78,10 +81,10 @@ The graphical user interface to change the values of simulation is:
 
 Examples in the files: [K-61-RT.txt](K-61-RT.txt) and [K-63-RT-shift.txt](K-63-RT-shift.txt).
 I recommend using the graphical editor of plain text online: https://asciiflow.com/
-- Out file: Name of out data simulation results (**WARNING**: If it exists, this will be remplaced).
+- Out file: Name of out data simulation results (**WARNING**: If this exists, it will be replaced).
 - Seed: Seed of the random number generator. It is ranlux24 engine.
-- SIMULATE button: Simulate the cycles and show the simulation results of $N_S-V$ and $I-V$, if the *Experiment* file exists, it is include in the $I-V$ graph. It action creates the folder *configurations* (**WARNING**: If it exists, this will be remplaced) with the plain text files of each $V_O$ configuration during the simulation. Additional, it generates the *Out file* with the results of simulation.
-- DRAW LAST SIMULATION button: By the $V_O$ configurations in *configurations* folder and *Out file* data, it generates .png images of simulation results in the folder *confsPng* (**WARNING**: If it exists, this will be remplaced).
+- SIMULATE button: Simulate the cycles and show the simulation results of $N_S-V$ and $I-V$, if the *Experiment* file exists, it is include in the $I-V$ graph. It action creates the folder *configurations* (**WARNING**: If this exists, it will be replaced) with the plain text files of each $V_O$ configuration during the simulation. Additional, it generates the *Out file* with the results of simulation.
+- DRAW LAST SIMULATION button: By the $V_O$ configurations in *configurations* folder and *Out file* data, it generates .png images of simulation results in the folder *confsPng* (**WARNING**: If this exists, it will be replaced).
 
 By [GenerateGIF.exe](GenerateGIF.exe) you can create a .gif after "DRAW LAST SIMULATION" button. Usage of GenerateGIF.exe in my repository: https://github.com/JuanFedericoRamirezRios/Generator-GIF
 
