@@ -14,8 +14,8 @@ Nfresh: -2.0
 Vforming (V): 5.1
 Vreset (V): -3.8
 Vset (V): 3.8
-Khrs (a.u.): 3.31e3
-Klrs (a.u. cm3): 2.73e-1
+Khrs (A/V-cm): 3.31e3
+Klrs (A-cm/V2): 2.73e-1
 
 gammaSET for generation probb.: 4.6
 gammaRESET for generation probb.: 0.4

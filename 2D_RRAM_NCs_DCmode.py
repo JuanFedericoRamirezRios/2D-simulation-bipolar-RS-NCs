@@ -86,10 +86,10 @@ class MAIN_FRAME(tk.Tk):
         s.Vreset = [-3.8]   # V
         # self.Vset = [3.2]      # V
         s.Vset = [3.8]      # V
-        # self.Khrs = [8.0E-23]  # u.a.
-        s.Khrs = [3.3]  # u.a.
-        # self.Klrs = [3.0E-35]  # u.a. * cm3
-        s.Klrs = [8.2e-6]  # u.a. * cm3
+        # self.Khrs = [8.0E-23]  # A/V-cm
+        s.Khrs = [3.31]  # A/V-cm
+        # self.Klrs = [3.0E-35]  # A-cm/V2
+        s.Klrs = [8.18e-6]  # A-cm/V2
 
         s.gammaSET = [4.6]
         s.gammaRESET = [0.4]
@@ -246,10 +246,10 @@ class MAIN_FRAME(tk.Tk):
         VsetControls = NC.CONTROLS_VALUE(master = s, name = "Vset", units = "V", value = s.Vset)
         VsetControls.grid(column = 5, row = 0, sticky = "nsew")
 
-        KhrsControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "K_HRS", units = "au", value = s.Khrs)
+        KhrsControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "K_HRS", units = "A/V-cm", value = s.Khrs)
         KhrsControls.grid(column = 6, row = 0, sticky = "nsew")
 
-        KlrsControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "K_LRS", units = "au-cm3", value = s.Klrs)
+        KlrsControls = NC.CONTROLS_SCIENTIFIC(master = s, name = "K_LRS", units = "A-cm/V2", value = s.Klrs)
         KlrsControls.grid(column = 7, row = 0, sticky = "nsew")
 
         ########################
@@ -427,8 +427,8 @@ class MAIN_FRAME(tk.Tk):
         s.outFile.write("Vforming: " + str(s.Vforming[0]) + " V\n")
         s.outFile.write("Vreset: " + str(s.Vreset[0]) + " V\n")
         s.outFile.write("Vset: " + str(s.Vset[0]) + " V\n")
-        s.outFile.write("Khrs: " + str(s.Khrs[0]) + " a.u.\n")
-        s.outFile.write("Klrs: " + str(s.Klrs[0]) + " a.u. cm3\n")
+        s.outFile.write("Khrs: " + str(s.Khrs[0]) + " A/V-cm\n")
+        s.outFile.write("Klrs: " + str(s.Klrs[0]) + " A-cm/V2\n")
         s.outFile.write("\n")
         s.outFile.write("gammaSET for generation probb.: " + str(s.gammaSET[0]) + "\n")
         s.outFile.write("gammaRESET for generation probb.: " + str(s.gammaRESET[0]) + "\n")
